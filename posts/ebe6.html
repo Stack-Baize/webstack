@@ -1,0 +1,252 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>linux主机加固 | 攀岩之鹿</title><meta name="author" content="Jeremy Peng"><meta name="copyright" content="Jeremy Peng"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="0x01 前 言Linux系统被应用于大部分企业的服务器上，因此在等保测评中主机加固也是必须要完成的一项环节。由于在之后项目开始要进行主机加固，因此对linux的加固流程进行总结学习。Linux的主机加固主要分为：账号安全、认证授权、协议安全、审计安全。简而言之，就是4A（统一安全管理平台解决方案）。 这边就使用我自己kali的虚拟机进行试验学习。 0x02 基础加固口令生存期gedit &#x2F;etc">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux主机加固">
+<meta property="og:url" content="https://aisk.cc/posts/ebe6.html">
+<meta property="og:site_name" content="攀岩之鹿">
+<meta property="og:description" content="0x01 前 言Linux系统被应用于大部分企业的服务器上，因此在等保测评中主机加固也是必须要完成的一项环节。由于在之后项目开始要进行主机加固，因此对linux的加固流程进行总结学习。Linux的主机加固主要分为：账号安全、认证授权、协议安全、审计安全。简而言之，就是4A（统一安全管理平台解决方案）。 这边就使用我自己kali的虚拟机进行试验学习。 0x02 基础加固口令生存期gedit &#x2F;etc">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://file.crazywong.com/gh/jerryc127/CDN@latest/cover/default_bg.png">
+<meta property="article:published_time" content="2020-09-28T03:00:00.000Z">
+<meta property="article:modified_time" content="2023-04-02T12:32:46.050Z">
+<meta property="article:author" content="Jeremy Peng">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="主机加固">
+<meta property="article:tag" content="PAM认证">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://file.crazywong.com/gh/jerryc127/CDN@latest/cover/default_bg.png"><link rel="shortcut icon" href="/img/web-logo.png"><link rel="canonical" href="https://aisk.cc/posts/ebe6.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":50,"languages":{"author":"作者: Jeremy Peng","link":"链接: ","source":"来源: 攀岩之鹿","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'linux主机加固',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-04-02 20:32:46'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (false) {
+    document.addEventListener('pjax:send', () => { preloader.initLoading() })
+    document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+  }
+})()</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">29</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">12</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/photo/"><i class="fa-fw fa-fw fas fa-images"></i><span> 图片</span></a></li><li><a class="site-page child" href="/video/"><i class="fa-fw fas fa-video"></i><span> 视频</span></a></li></ul></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://192.168.88.252:5001"><i class="fa-fw fas fa-folder-open"></i><span> NAS</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://file.crazywong.com/gh/jerryc127/CDN@latest/cover/default_bg.png')"><nav id="nav"><span id="blog-info"><a href="/" title="攀岩之鹿"><img class="site-icon" src="/img/web-logo.png"/><span class="site-name">攀岩之鹿</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/photo/"><i class="fa-fw fa-fw fas fa-images"></i><span> 图片</span></a></li><li><a class="site-page child" href="/video/"><i class="fa-fw fas fa-video"></i><span> 视频</span></a></li></ul></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://192.168.88.252:5001"><i class="fa-fw fas fa-folder-open"></i><span> NAS</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">linux主机加固</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-09-28T03:00:00.000Z" title="发表于 2020-09-28 11:00:00">2020-09-28</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-04-02T12:32:46.050Z" title="更新于 2023-04-02 20:32:46">2023-04-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8/">信息安全</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.3k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>5分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="linux主机加固"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="0x01-前-言"><a href="#0x01-前-言" class="headerlink" title="0x01 前 言"></a>0x01 前 言</h2><p>Linux系统被应用于大部分企业的服务器上，因此在等保测评中主机加固也是必须要完成的一项环节。<br>由于在之后项目开始要进行主机加固，因此对linux的加固流程进行总结学习。<br>Linux的主机加固主要分为：账号安全、认证授权、协议安全、审计安全。简而言之，就是4A（统一安全管理平台解决方案）。</p>
+<p>这边就使用我自己kali的虚拟机进行试验学习。</p>
+<h2 id="0x02-基础加固"><a href="#0x02-基础加固" class="headerlink" title="0x02 基础加固"></a>0x02 基础加固</h2><h3 id="口令生存期"><a href="#口令生存期" class="headerlink" title="口令生存期"></a>口令生存期</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gedit /etc/login.defs</span><br><span class="line"><span class="comment">#在此处对密码的长度、时间、过期警告进行修改</span></span><br><span class="line">PASS_MAX_DAYS   90  <span class="comment">#密码最长过期天数</span></span><br><span class="line">PASS_MIN_DAYS   10   <span class="comment">#密码最小过期天数</span></span><br><span class="line">PASS_WARN_AGE   7   <span class="comment">#密码过期警告天数</span></span><br><span class="line">如果修改设置有最小长度也需要修改</span><br><span class="line">PASS_MIN_LEN    8   <span class="comment">#密码最小长度</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="口令复杂度（很重要）"><a href="#口令复杂度（很重要）" class="headerlink" title="口令复杂度（很重要）"></a>口令复杂度（很重要）</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vim /etc/pam.d/system-auth</span><br><span class="line"><span class="comment">#在文件中找到 password requisite  pam_cracklib.so</span></span><br><span class="line"><span class="comment">#将其修改为:</span></span><br><span class="line">password requisite  pam_cracklib.so try_first_pass retry=3 dcredit=-1 lcredit=-1 ucredit=-1 ocredit=-1 minlen=8</span><br></pre></td></tr></table></figure>
+
+<p>备注：至少包含一个数字、一个小写字母、一个大写字母、一个特殊字符、且密码长度&gt;&#x3D;8</p>
+<h3 id="版本信息"><a href="#版本信息" class="headerlink" title="版本信息"></a>版本信息</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cat</span> /proc/version</span><br></pre></td></tr></table></figure>
+
+<h3 id="限制xx用户登录"><a href="#限制xx用户登录" class="headerlink" title="限制xx用户登录"></a>限制xx用户登录</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vim /etc/hosts.deny</span><br><span class="line"><span class="comment">#添加内容：</span></span><br><span class="line">sshd : 192.168.1.1</span><br><span class="line"><span class="comment">#禁止192.168.1.1对服务器进行ssh的登陆</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="检查是否有其他uid-x3D-0的用户"><a href="#检查是否有其他uid-x3D-0的用户" class="headerlink" title="检查是否有其他uid&#x3D;0的用户"></a>检查是否有其他uid&#x3D;0的用户</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">awk -F “：” <span class="string">&#x27;($3==0)  &#123;print  $1&#125; &#x27;</span> /etc/passwd</span><br></pre></td></tr></table></figure>
+
+<h3 id="登陆超时限制"><a href="#登陆超时限制" class="headerlink" title="登陆超时限制"></a>登陆超时限制</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cp</span> -p /etc/profile /etc/profile_bak <span class="comment">#（备份）</span></span><br><span class="line">gedit /etc/profile</span><br><span class="line"><span class="comment">#增加</span></span><br><span class="line">TMOUT=300</span><br><span class="line"><span class="built_in">export</span> TMOUT</span><br><span class="line"></span><br><span class="line"><span class="comment">#或者</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;export TMOUT=300&#x27;</span>&gt;&gt;/etc/profile</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;readonly TMOUT&#x27;</span> &gt;&gt;/etc/profile</span><br><span class="line"><span class="built_in">source</span> /etc/profile</span><br></pre></td></tr></table></figure>
+
+<h3 id="检查是否使用PAM认证模块禁止wheel组之外的用户su为root"><a href="#检查是否使用PAM认证模块禁止wheel组之外的用户su为root" class="headerlink" title="检查是否使用PAM认证模块禁止wheel组之外的用户su为root"></a>检查是否使用PAM认证模块禁止wheel组之外的用户su为root</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gedit /etc/pam.d/su</span><br><span class="line"><span class="comment">#新增</span></span><br><span class="line">auth          sufficient     pam_rootok.so</span><br><span class="line">auth          required     pam_wheel.so use_uid</span><br></pre></td></tr></table></figure>
+
+<p>备注：auth与sufficient之间由两个tab建隔开，sufficient与动态库路径之间使用一个tab建隔开</p>
+<h3 id="禁用无用账户"><a href="#禁用无用账户" class="headerlink" title="禁用无用账户"></a>禁用无用账户</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cat</span> /etc/passwd <span class="comment">#查看口令文件，确认不必要的账号。</span></span><br><span class="line"></span><br><span class="line">passwd -l user <span class="comment"># 锁定不必要的账号</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="账户锁定"><a href="#账户锁定" class="headerlink" title="账户锁定"></a>账户锁定</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gedit /etc/pam.d/system-auth</span><br><span class="line"><span class="comment">#在文件中修改或者添加</span></span><br><span class="line">auth required pam_tally.so onerr=fail deny=3 unlock_time=7200</span><br><span class="line"></span><br><span class="line"><span class="comment">#锁定账户举例：</span></span><br><span class="line">passwd -l bin</span><br><span class="line">passwd -l sys</span><br><span class="line">passwd -l adm</span><br></pre></td></tr></table></figure>
+
+<h3 id="检查系统弱口令"><a href="#检查系统弱口令" class="headerlink" title="检查系统弱口令"></a>检查系统弱口令</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">john /etc/shadow --single</span><br><span class="line">john /etc/shadow --wordlist=pass.dic</span><br></pre></td></tr></table></figure>
+
+<p>我这边有报错 就不展示了<br>使用passwd 用户 命令为用户设置复杂的密码</p>
+<h2 id="0x03-软件协议安全"><a href="#0x03-软件协议安全" class="headerlink" title="0x03 软件协议安全"></a>0x03 软件协议安全</h2><h3 id="openssh升级（按需做）"><a href="#openssh升级（按需做）" class="headerlink" title="openssh升级（按需做）"></a>openssh升级（按需做）</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum update  openssh</span><br></pre></td></tr></table></figure>
+
+<h3 id="定时任务（防止病毒感染）"><a href="#定时任务（防止病毒感染）" class="headerlink" title="定时任务（防止病毒感染）"></a>定时任务（防止病毒感染）</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#定时任务检查：</span></span><br><span class="line">crontab -l</span><br><span class="line"></span><br><span class="line"><span class="comment">#一次性任务检查：</span></span><br><span class="line">at -l</span><br></pre></td></tr></table></figure>
+
+<h3 id="限制ssh登录（看是否需要）"><a href="#限制ssh登录（看是否需要）" class="headerlink" title="限制ssh登录（看是否需要）"></a>限制ssh登录（看是否需要）</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vim /etc/ssh/sshd_config</span><br><span class="line"><span class="comment">#查看PermitRootLogin是否为no</span></span><br><span class="line">PermitRootLogin no <span class="comment">#不允许root登陆</span></span><br><span class="line">Protocol 2 <span class="comment">#修改ssh使用的协议版本</span></span><br><span class="line">MaxAuthTries 3 <span class="comment">#修改允许密码错误次数</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;tty1&quot;</span> &gt; /etc/securetty</span><br><span class="line">hmod 700 /root</span><br></pre></td></tr></table></figure>
+
+<h3 id="限制su为root用户"><a href="#限制su为root用户" class="headerlink" title="限制su为root用户"></a>限制su为root用户</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gedit /etc/pam.d/su</span><br><span class="line"><span class="comment">#在头部添加</span></span><br><span class="line">auth required /lib/security/pam_wheel.so group=wheel</span><br></pre></td></tr></table></figure>
+
+<h3 id="禁止root用户登录ftp"><a href="#禁止root用户登录ftp" class="headerlink" title="禁止root用户登录ftp"></a>禁止root用户登录ftp</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#因为我的kali下没有这个文件，因此借鉴一下网上的</span></span><br><span class="line"><span class="built_in">cat</span> /etc/pam.d/vsftpd</span><br><span class="line">Auth required pam_listfile.so item=user sense=deny file=/etc/vsftpd/ftpusers onerr=succeed</span><br><span class="line"><span class="comment">#其中file=/etc/vsftpd/ftpusers即为当前系统上的ftpusers文件.</span></span><br><span class="line"><span class="built_in">echo</span>  “root”   &gt;&gt;   /etc/vsftpd/ftpusers</span><br></pre></td></tr></table></figure>
+
+<h3 id="防止flood攻击"><a href="#防止flood攻击" class="headerlink" title="防止flood攻击"></a>防止flood攻击</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gedit  /etc/sysctl.conf</span><br><span class="line"><span class="comment">#增加</span></span><br><span class="line">net.ipv4.tcp_syncookies = 1</span><br><span class="line">sysctl  -p</span><br></pre></td></tr></table></figure>
+
+<h3 id="禁ping"><a href="#禁ping" class="headerlink" title="禁ping"></a>禁ping</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> 0 &gt; /proc/sys/net/ipv4/icmp_echo_igore_all</span><br></pre></td></tr></table></figure>
+
+<h3 id="检查异常进程"><a href="#检查异常进程" class="headerlink" title="检查异常进程"></a>检查异常进程</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ps aux|<span class="built_in">sort</span> -rn -k +3|<span class="built_in">head</span></span><br><span class="line"><span class="comment">#检查cpu占用前10</span></span><br><span class="line">ps aux|<span class="built_in">sort</span> -rn -k +4|<span class="built_in">head</span></span><br><span class="line"><span class="comment">#检查内存占用前10</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="关闭无效的服务及端口"><a href="#关闭无效的服务及端口" class="headerlink" title="关闭无效的服务及端口"></a>关闭无效的服务及端口</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#比如邮箱</span></span><br><span class="line">service postfix status</span><br><span class="line">chkconfig --del postfix</span><br><span class="line">chkconfig postfix off</span><br><span class="line"></span><br><span class="line"><span class="comment">#比如cpus</span></span><br><span class="line">service cups status</span><br><span class="line">chkconfig --del cups</span><br><span class="line">chkconfig cups off</span><br></pre></td></tr></table></figure>
+
+<h3 id="设置防火墙策略"><a href="#设置防火墙策略" class="headerlink" title="设置防火墙策略"></a>设置防火墙策略</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#或者用防火墙策略：</span></span><br><span class="line">service iptables status</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;请根据用户实际业务端口占用等情况进行设置！&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gedit /etc/sysconfig/iptables <span class="comment">#添加如下策略</span></span><br><span class="line">-A INPUT -m state --state NEW -m tcp -p tcp --dport 8080 -j ACCEPT</span><br><span class="line">-A INPUT -m state --state NEW -m udp -p udp --dport 8080 -j ACCEPT</span><br></pre></td></tr></table></figure>
+
+<p>以下举例：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">iptables -I INPUT -s 22.48.11.11 -j DROP</span><br><span class="line"><span class="comment"># 22.48.11.11的包全部屏蔽</span></span><br><span class="line">iptables -I INPUT -s 22.48.11.0/24 -j DROP</span><br><span class="line"><span class="comment">#22.48.11.1到22.48.11.255的访问全部屏蔽</span></span><br><span class="line">iptables -I INPUT -s 192.168.1.1 -p tcp --dport 80 -j DROP</span><br><span class="line"><span class="comment"># 192.168.1.1的80端口的访问全部屏蔽</span></span><br><span class="line">iptables -I INPUT -s 192.168.1.0/24 -p tcp --dport 80 -j DROP</span><br><span class="line"><span class="comment">#192.168.1.1到192.168.1.255的80端口的访问全部屏蔽</span></span><br><span class="line">service iptabels restart</span><br><span class="line"><span class="comment">#重启防火墙</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="设置历史记录数量"><a href="#设置历史记录数量" class="headerlink" title="设置历史记录数量"></a>设置历史记录数量</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cp</span> /etc/profile /etc/profile_xu_bak <span class="comment">#（备份）</span></span><br><span class="line">sed -i s/<span class="string">&#x27;HISTSIZE=1000&#x27;</span>/<span class="string">&#x27;HISTSIZE=5000&#x27;</span>/g /etc/profile  <span class="comment">#（修改）</span></span><br><span class="line"><span class="built_in">cat</span> /etc/profile |grep HISTSIZE|grep -v <span class="built_in">export</span>   <span class="comment">#（检查）</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="配置用户最小权限"><a href="#配置用户最小权限" class="headerlink" title="配置用户最小权限"></a>配置用户最小权限</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">chmod</span> 644 /etc/passwd</span><br><span class="line"><span class="built_in">chmod</span> 400 /etc/shadow</span><br><span class="line"><span class="built_in">chmod</span> 644 /etc/group</span><br></pre></td></tr></table></figure>
+
+<h3 id="文件与目录缺省权限控制"><a href="#文件与目录缺省权限控制" class="headerlink" title="文件与目录缺省权限控制"></a>文件与目录缺省权限控制</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cp</span> /etc/profile /etc/profile.bak  <span class="comment">#（备份）</span></span><br><span class="line">gedit  /etc/profile</span><br><span class="line"><span class="comment">#增加</span></span><br><span class="line"><span class="built_in">umask</span> 027</span><br><span class="line"><span class="built_in">source</span>  /etc/profile</span><br></pre></td></tr></table></figure>
+
+<h2 id="0x04-日志审计"><a href="#0x04-日志审计" class="headerlink" title="0x04 日志审计"></a>0x04 日志审计</h2><h3 id="启用远程日志功能"><a href="#启用远程日志功能" class="headerlink" title="启用远程日志功能"></a>启用远程日志功能</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gedit /etc/rsyslog.conf</span><br><span class="line">*.*         @Syslog日志服务器IP</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注意：* 和@之间存在的是tab键，非空格。</p>
+</blockquote>
+<h3 id="检查是否记录安全事件日志"><a href="#检查是否记录安全事件日志" class="headerlink" title="检查是否记录安全事件日志"></a>检查是否记录安全事件日志</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gedit  /etc/syslog.conf 或者 /etc/rsyslog.conf</span><br><span class="line"><span class="comment">#在文件中加入如下内容:</span></span><br><span class="line">*.err;kern.debug;daemon.notice     /var/log/messages</span><br><span class="line"><span class="built_in">chmod</span> 640 /var/log/messages</span><br><span class="line">service rsyslog restart</span><br></pre></td></tr></table></figure>
+
+<h3 id="日志保留半年以上"><a href="#日志保留半年以上" class="headerlink" title="日志保留半年以上"></a>日志保留半年以上</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cp</span>/etc/logrotate.conf /etc/logrotate.conf_xu_bak   <span class="comment">#（备份）</span></span><br><span class="line">sed -i s/<span class="string">&#x27;rotate 4&#x27;</span>/<span class="string">&#x27;rotate 12&#x27;</span>/g /etc/logrotate.conf   <span class="comment">#（修改）</span></span><br><span class="line">service syslog restart    <span class="comment">#（重启）</span></span><br><span class="line"><span class="built_in">cat</span> /etc/logrotate.conf |grep -v <span class="string">&#x27;#&#x27;</span> |grep rotate    <span class="comment">#（检查）</span></span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://aisk.cc">Jeremy Peng</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://aisk.cc/posts/ebe6.html">https://aisk.cc/posts/ebe6.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://aisk.cc" target="_blank">攀岩之鹿</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Linux/">Linux</a><a class="post-meta__tags" href="/tags/%E4%B8%BB%E6%9C%BA%E5%8A%A0%E5%9B%BA/">主机加固</a><a class="post-meta__tags" href="/tags/PAM%E8%AE%A4%E8%AF%81/">PAM认证</a></div><div class="post_share"><div class="social-share" data-image="https://file.crazywong.com/gh/jerryc127/CDN@latest/cover/default_bg.png" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/posts/e3a7.html" title="Centos7双网卡绑定配置 bonding"><img class="cover" src="https://i.loli.net/2019/11/10/T7Mu8Aod3egmC4Q.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Centos7双网卡绑定配置 bonding</div></div></a></div><div class="next-post pull-right"><a href="/posts/12a1.html" title="基于Docker部署jumpserver环境"><img class="cover" src="https://file.crazywong.com/gh/jerryc127/CDN@latest/cover/default_bg.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">基于Docker部署jumpserver环境</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/posts/d931.html" title="Linux安全加固措施方案之密码加固"><img class="cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-08</div><div class="title">Linux安全加固措施方案之密码加固</div></div></a></div><div><a href="/posts/3.html" title="Linux iostat命令详解"><img class="cover" src="https://file.crazywong.com/gh/jerryc127/CDN@latest/cover/default_bg.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-05</div><div class="title">Linux iostat命令详解</div></div></a></div><div><a href="/posts/e3a7.html" title="Centos7双网卡绑定配置 bonding"><img class="cover" src="https://i.loli.net/2019/11/10/T7Mu8Aod3egmC4Q.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-29</div><div class="title">Centos7双网卡绑定配置 bonding</div></div></a></div><div><a href="/posts/9014.html" title="Linux系统单用户模式"><img class="cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-05-02</div><div class="title">Linux系统单用户模式</div></div></a></div><div><a href="/posts/3184.html" title="基于Docker部署GitLab环境搭建"><img class="cover" src="https://i.loli.net/2019/11/10/T7Mu8Aod3egmC4Q.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-24</div><div class="title">基于Docker部署GitLab环境搭建</div></div></a></div><div><a href="/posts/5d00.html" title="安装配置Docker环境"><img class="cover" src="https://i.loli.net/2019/11/10/T7Mu8Aod3egmC4Q.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-23</div><div class="title">安装配置Docker环境</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-%E5%89%8D-%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">0x01 前 言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x02-%E5%9F%BA%E7%A1%80%E5%8A%A0%E5%9B%BA"><span class="toc-number">2.</span> <span class="toc-text">0x02 基础加固</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%A3%E4%BB%A4%E7%94%9F%E5%AD%98%E6%9C%9F"><span class="toc-number">2.1.</span> <span class="toc-text">口令生存期</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%A3%E4%BB%A4%E5%A4%8D%E6%9D%82%E5%BA%A6%EF%BC%88%E5%BE%88%E9%87%8D%E8%A6%81%EF%BC%89"><span class="toc-number">2.2.</span> <span class="toc-text">口令复杂度（很重要）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%89%88%E6%9C%AC%E4%BF%A1%E6%81%AF"><span class="toc-number">2.3.</span> <span class="toc-text">版本信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%99%90%E5%88%B6xx%E7%94%A8%E6%88%B7%E7%99%BB%E5%BD%95"><span class="toc-number">2.4.</span> <span class="toc-text">限制xx用户登录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A3%80%E6%9F%A5%E6%98%AF%E5%90%A6%E6%9C%89%E5%85%B6%E4%BB%96uid-x3D-0%E7%9A%84%E7%94%A8%E6%88%B7"><span class="toc-number">2.5.</span> <span class="toc-text">检查是否有其他uid&#x3D;0的用户</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%99%BB%E9%99%86%E8%B6%85%E6%97%B6%E9%99%90%E5%88%B6"><span class="toc-number">2.6.</span> <span class="toc-text">登陆超时限制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A3%80%E6%9F%A5%E6%98%AF%E5%90%A6%E4%BD%BF%E7%94%A8PAM%E8%AE%A4%E8%AF%81%E6%A8%A1%E5%9D%97%E7%A6%81%E6%AD%A2wheel%E7%BB%84%E4%B9%8B%E5%A4%96%E7%9A%84%E7%94%A8%E6%88%B7su%E4%B8%BAroot"><span class="toc-number">2.7.</span> <span class="toc-text">检查是否使用PAM认证模块禁止wheel组之外的用户su为root</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A6%81%E7%94%A8%E6%97%A0%E7%94%A8%E8%B4%A6%E6%88%B7"><span class="toc-number">2.8.</span> <span class="toc-text">禁用无用账户</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B4%A6%E6%88%B7%E9%94%81%E5%AE%9A"><span class="toc-number">2.9.</span> <span class="toc-text">账户锁定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A3%80%E6%9F%A5%E7%B3%BB%E7%BB%9F%E5%BC%B1%E5%8F%A3%E4%BB%A4"><span class="toc-number">2.10.</span> <span class="toc-text">检查系统弱口令</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x03-%E8%BD%AF%E4%BB%B6%E5%8D%8F%E8%AE%AE%E5%AE%89%E5%85%A8"><span class="toc-number">3.</span> <span class="toc-text">0x03 软件协议安全</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#openssh%E5%8D%87%E7%BA%A7%EF%BC%88%E6%8C%89%E9%9C%80%E5%81%9A%EF%BC%89"><span class="toc-number">3.1.</span> <span class="toc-text">openssh升级（按需做）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%EF%BC%88%E9%98%B2%E6%AD%A2%E7%97%85%E6%AF%92%E6%84%9F%E6%9F%93%EF%BC%89"><span class="toc-number">3.2.</span> <span class="toc-text">定时任务（防止病毒感染）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%99%90%E5%88%B6ssh%E7%99%BB%E5%BD%95%EF%BC%88%E7%9C%8B%E6%98%AF%E5%90%A6%E9%9C%80%E8%A6%81%EF%BC%89"><span class="toc-number">3.3.</span> <span class="toc-text">限制ssh登录（看是否需要）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%99%90%E5%88%B6su%E4%B8%BAroot%E7%94%A8%E6%88%B7"><span class="toc-number">3.4.</span> <span class="toc-text">限制su为root用户</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A6%81%E6%AD%A2root%E7%94%A8%E6%88%B7%E7%99%BB%E5%BD%95ftp"><span class="toc-number">3.5.</span> <span class="toc-text">禁止root用户登录ftp</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%98%B2%E6%AD%A2flood%E6%94%BB%E5%87%BB"><span class="toc-number">3.6.</span> <span class="toc-text">防止flood攻击</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A6%81ping"><span class="toc-number">3.7.</span> <span class="toc-text">禁ping</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A3%80%E6%9F%A5%E5%BC%82%E5%B8%B8%E8%BF%9B%E7%A8%8B"><span class="toc-number">3.8.</span> <span class="toc-text">检查异常进程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%97%AD%E6%97%A0%E6%95%88%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%8F%8A%E7%AB%AF%E5%8F%A3"><span class="toc-number">3.9.</span> <span class="toc-text">关闭无效的服务及端口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E9%98%B2%E7%81%AB%E5%A2%99%E7%AD%96%E7%95%A5"><span class="toc-number">3.10.</span> <span class="toc-text">设置防火墙策略</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E5%8E%86%E5%8F%B2%E8%AE%B0%E5%BD%95%E6%95%B0%E9%87%8F"><span class="toc-number">3.11.</span> <span class="toc-text">设置历史记录数量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E7%94%A8%E6%88%B7%E6%9C%80%E5%B0%8F%E6%9D%83%E9%99%90"><span class="toc-number">3.12.</span> <span class="toc-text">配置用户最小权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E4%B8%8E%E7%9B%AE%E5%BD%95%E7%BC%BA%E7%9C%81%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6"><span class="toc-number">3.13.</span> <span class="toc-text">文件与目录缺省权限控制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x04-%E6%97%A5%E5%BF%97%E5%AE%A1%E8%AE%A1"><span class="toc-number">4.</span> <span class="toc-text">0x04 日志审计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%AF%E7%94%A8%E8%BF%9C%E7%A8%8B%E6%97%A5%E5%BF%97%E5%8A%9F%E8%83%BD"><span class="toc-number">4.1.</span> <span class="toc-text">启用远程日志功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A3%80%E6%9F%A5%E6%98%AF%E5%90%A6%E8%AE%B0%E5%BD%95%E5%AE%89%E5%85%A8%E4%BA%8B%E4%BB%B6%E6%97%A5%E5%BF%97"><span class="toc-number">4.2.</span> <span class="toc-text">检查是否记录安全事件日志</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A5%E5%BF%97%E4%BF%9D%E7%95%99%E5%8D%8A%E5%B9%B4%E4%BB%A5%E4%B8%8A"><span class="toc-number">4.3.</span> <span class="toc-text">日志保留半年以上</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By Jeremy Peng</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">我的其它站点：<a href="https://aisk.cc/" target="_blank" rel="noopener">aisk.cc</a>、<a href="https://baize.cc/" target="_blank" rel="noopener">baize.cc</a><br>留下运维点滴记忆，悠悠岁月慢慢回味。</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

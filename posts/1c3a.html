@@ -1,0 +1,228 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Redis6.0.10编译安装配置 | 攀岩之鹿</title><meta name="author" content="Jeremy Peng"><meta name="copyright" content="Jeremy Peng"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="0x01 下载Redis直接登录官网下载你需要的版本https:&#x2F;&#x2F;redis.io&#x2F; #安装编译依赖gc++$ sudo yum install gcc-c++#下载、编译、安装redis$ wget http:&#x2F;&#x2F;download.redis.io&#x2F;releases&#x2F;redis-6.0.10.tar.gz$ tar xzf redis-6.0.10.tar.gz$ cd redis-6.0.1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis6.0.10编译安装配置">
+<meta property="og:url" content="https://aisk.cc/posts/1c3a.html">
+<meta property="og:site_name" content="攀岩之鹿">
+<meta property="og:description" content="0x01 下载Redis直接登录官网下载你需要的版本https:&#x2F;&#x2F;redis.io&#x2F; #安装编译依赖gc++$ sudo yum install gcc-c++#下载、编译、安装redis$ wget http:&#x2F;&#x2F;download.redis.io&#x2F;releases&#x2F;redis-6.0.10.tar.gz$ tar xzf redis-6.0.10.tar.gz$ cd redis-6.0.1">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg">
+<meta property="article:published_time" content="2021-02-10T03:00:00.000Z">
+<meta property="article:modified_time" content="2023-04-02T12:32:46.050Z">
+<meta property="article:author" content="Jeremy Peng">
+<meta property="article:tag" content="CentOS">
+<meta property="article:tag" content="Redis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg"><link rel="shortcut icon" href="/img/web-logo.png"><link rel="canonical" href="https://aisk.cc/posts/1c3a.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":50,"languages":{"author":"作者: Jeremy Peng","link":"链接: ","source":"来源: 攀岩之鹿","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Redis6.0.10编译安装配置',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-04-02 20:32:46'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (false) {
+    document.addEventListener('pjax:send', () => { preloader.initLoading() })
+    document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+  }
+})()</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">29</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">12</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/photo/"><i class="fa-fw fa-fw fas fa-images"></i><span> 图片</span></a></li><li><a class="site-page child" href="/video/"><i class="fa-fw fas fa-video"></i><span> 视频</span></a></li></ul></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://192.168.88.252:5001"><i class="fa-fw fas fa-folder-open"></i><span> NAS</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="攀岩之鹿"><img class="site-icon" src="/img/web-logo.png"/><span class="site-name">攀岩之鹿</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/photo/"><i class="fa-fw fa-fw fas fa-images"></i><span> 图片</span></a></li><li><a class="site-page child" href="/video/"><i class="fa-fw fas fa-video"></i><span> 视频</span></a></li></ul></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://192.168.88.252:5001"><i class="fa-fw fas fa-folder-open"></i><span> NAS</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Redis6.0.10编译安装配置</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-02-10T03:00:00.000Z" title="发表于 2021-02-10 11:00:00">2021-02-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-04-02T12:32:46.050Z" title="更新于 2023-04-02 20:32:46">2023-04-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%B3%BB%E7%BB%9F%E9%85%8D%E7%BD%AE/">系统配置</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">598</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>2分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Redis6.0.10编译安装配置"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h3 id="0x01-下载Redis"><a href="#0x01-下载Redis" class="headerlink" title="0x01 下载Redis"></a>0x01 下载Redis</h3><p>直接登录官网下载你需要的版本<a target="_blank" rel="noopener" href="https://redis.io/">https://redis.io/</a></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#安装编译依赖gc++</span></span><br><span class="line">$ sudo yum install gcc-c++</span><br><span class="line"><span class="comment">#下载、编译、安装redis</span></span><br><span class="line">$ wget http://download.redis.io/releases/redis-6.0.10.tar.gz</span><br><span class="line">$ tar xzf redis-6.0.10.tar.gz</span><br><span class="line">$ <span class="built_in">cd</span> redis-6.0.10</span><br></pre></td></tr></table></figure>
+<h3 id="0x02-安装编译"><a href="#0x02-安装编译" class="headerlink" title="0x02 安装编译"></a>0x02 安装编译</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ <span class="built_in">mkdir</span> -p /usr/local/redis</span><br><span class="line"><span class="comment">#编译包并安装到指定目录</span></span><br><span class="line">$ make PREFIX=/usr/local/redis install</span><br><span class="line"><span class="comment">#启动服务</span></span><br><span class="line">$ src/redis-server</span><br><span class="line"><span class="comment">#运行shell 及 基本操作</span></span><br><span class="line">$ src/redis-cli</span><br><span class="line">redis&gt; <span class="built_in">set</span> foo bar</span><br><span class="line">OK</span><br><span class="line">redis&gt; get foo</span><br><span class="line"><span class="string">&quot;bar&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>编译后文件</p>
+<p>redis-benchmark（压力测试工具）、redis-check-aof（检查.aof文件完整性的工具）、redis-check-rdb（检查数据文件完整性的工具）、redis-sentinel（监控集群运行状态）、redis-server（服务端）、redis-cli（客户端）</p>
+<h3 id="0x03-编译出错"><a href="#0x03-编译出错" class="headerlink" title="0x03 编译出错"></a>0x03 编译出错</h3><p><img src="/medias/redis-error.png" alt="编译出错"></p>
+<p>这时我们需要检查 gcc 版本</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">gcc -v</span><br></pre></td></tr></table></figure>
+
+<p>配置scl源，升级版本：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">##安装scl源，修改官方源地址</span></span><br><span class="line">yum -y install centos-release-scl</span><br><span class="line">vim CentOS-SCLo-scl-rh.repo</span><br><span class="line">vim CentOS-SCLo-scl.repo</span><br><span class="line"><span class="comment">##安装新版gcc</span></span><br><span class="line">yum -y install devtoolset-9-gcc devtoolset-9-gcc-c++ devtoolset-9-binutils</span><br><span class="line">scl <span class="built_in">enable</span> devtoolset-9 bash</span><br><span class="line"><span class="comment">##永久生效</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;source /opt/rh/devtoolset-9/enable&quot;</span> &gt;&gt;/etc/profile</span><br><span class="line">yum install tcl -y</span><br></pre></td></tr></table></figure>
+
+<h3 id="0x04-修改配置文件"><a href="#0x04-修改配置文件" class="headerlink" title="0x04 修改配置文件"></a>0x04 修改配置文件</h3><p>编辑”&#x2F;etc&#x2F;rc.d&#x2F;init.d&#x2F;redis”文件，做以下几处修改</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi redis.conf</span><br><span class="line"><span class="comment">#!/bin/sh</span></span><br><span class="line"><span class="comment"># chkconfig: 2345 90 10</span></span><br><span class="line"><span class="comment"># description: Start And Stop Redis</span></span><br><span class="line"></span><br><span class="line">protected-mode no <span class="comment"># 关闭保护模式,不然远程还是连接不了</span></span><br><span class="line">daemonize <span class="built_in">yes</span>     <span class="comment"># 守护进程模式开启,设为后台运行</span></span><br><span class="line"><span class="built_in">bind</span> 127.0.0.1    <span class="comment"># 绑定IP按需修改</span></span><br><span class="line">port 6379         <span class="comment"># 端口按需修改</span></span><br></pre></td></tr></table></figure>
+
+<p>启动 Redis服务端</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /usr/local/redis/bin/</span><br><span class="line">./redis-server /usr/local/redis/redis.conf</span><br></pre></td></tr></table></figure>
+
+<p>查看监听</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ps -ef | grep redis</span><br></pre></td></tr></table></figure>
+
+<p>启动Redis客户端</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./redis-cli</span><br><span class="line">127.0.0.1:6379&gt; <span class="built_in">set</span> hello word</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; get hello</span><br><span class="line"><span class="string">&quot;word&quot;</span></span><br><span class="line">127.0.0.1:6379&gt; <span class="built_in">exit</span></span><br></pre></td></tr></table></figure>
+
+<p>关闭Redis服务 查看监听已经关闭</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./redis-cli shutdown</span><br><span class="line">ps -ef | grep redis</span><br></pre></td></tr></table></figure>
+
+<p>设置开机自动启动Redis服务。首先复制启动脚本到资源目录</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cp</span> /root/redis-6.0.10/utils/redis_init_script /etc/rc.d/init.d/redis</span><br></pre></td></tr></table></figure>
+
+<p>修改启动脚本</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">chmod</span> 755 /etc/rc.d/init.d/redis</span><br><span class="line"><span class="comment">##然后将Redis服务加入到系统服务</span></span><br><span class="line">chkconfig --add redis</span><br><span class="line"><span class="comment">##最后检查Redis服务设置是否已经生效</span></span><br><span class="line">chkconfig --list redis</span><br></pre></td></tr></table></figure>
+
+<p>现在就可以使用service命令来启动和停止Redis服务了</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl status redis.service</span><br><span class="line">systemctl start redis.service</span><br><span class="line">systemctl stop redis.service</span><br></pre></td></tr></table></figure>
+
+<p>防火墙中放通端口</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">firewall-cmd --zone=public --add-port=6379/tcp --permanent</span><br><span class="line">firewall-cmd --reload</span><br><span class="line"><span class="comment">##查看端口是否放通</span></span><br><span class="line">firewall-cmd --list-ports </span><br></pre></td></tr></table></figure>
+
+<p>至此Redis安装完毕</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://aisk.cc">Jeremy Peng</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://aisk.cc/posts/1c3a.html">https://aisk.cc/posts/1c3a.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://aisk.cc" target="_blank">攀岩之鹿</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/CentOS/">CentOS</a><a class="post-meta__tags" href="/tags/Redis/">Redis</a></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/posts/76b2.html" title="Linux磁盘分区并挂载"><img class="cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Linux磁盘分区并挂载</div></div></a></div><div class="next-post pull-right"><a href="/posts/15ac.html" title="Hexo版本升级指南"><img class="cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Hexo版本升级指南</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/posts/2.html" title="CentOS上搭建GitLab的详细过程"><img class="cover" src="https://i.loli.net/2019/11/10/T7Mu8Aod3egmC4Q.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-04</div><div class="title">CentOS上搭建GitLab的详细过程</div></div></a></div><div><a href="/posts/e3a7.html" title="Centos7双网卡绑定配置 bonding"><img class="cover" src="https://i.loli.net/2019/11/10/T7Mu8Aod3egmC4Q.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-29</div><div class="title">Centos7双网卡绑定配置 bonding</div></div></a></div><div><a href="/posts/ed21.html" title="CentOS编译安装配置MariaDB数据库"><img class="cover" src="https://i.loli.net/2019/11/10/T7Mu8Aod3egmC4Q.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-04-29</div><div class="title">CentOS编译安装配置MariaDB数据库</div></div></a></div><div><a href="/posts/9014.html" title="Linux系统单用户模式"><img class="cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-05-02</div><div class="title">Linux系统单用户模式</div></div></a></div><div><a href="/posts/a7ac.html" title="CentOS8编译安装配置MySQL8数据库"><img class="cover" src="https://i.loli.net/2019/11/10/T7Mu8Aod3egmC4Q.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-22</div><div class="title">CentOS8编译安装配置MySQL8数据库</div></div></a></div><div><a href="/posts/efc.html" title="Linux系统安装之后，如何调节CPU性能策略"><img class="cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-04-25</div><div class="title">Linux系统安装之后，如何调节CPU性能策略</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#0x01-%E4%B8%8B%E8%BD%BDRedis"><span class="toc-number">1.</span> <span class="toc-text">0x01 下载Redis</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x02-%E5%AE%89%E8%A3%85%E7%BC%96%E8%AF%91"><span class="toc-number">2.</span> <span class="toc-text">0x02 安装编译</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x03-%E7%BC%96%E8%AF%91%E5%87%BA%E9%94%99"><span class="toc-number">3.</span> <span class="toc-text">0x03 编译出错</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#0x04-%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">4.</span> <span class="toc-text">0x04 修改配置文件</span></a></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By Jeremy Peng</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">我的其它站点：<a href="https://aisk.cc/" target="_blank" rel="noopener">aisk.cc</a>、<a href="https://baize.cc/" target="_blank" rel="noopener">baize.cc</a><br>留下运维点滴记忆，悠悠岁月慢慢回味。</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

@@ -1,0 +1,438 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>怎么搭建NTP时间服务器 | 攀岩之鹿</title><meta name="author" content="Jeremy Peng"><meta name="copyright" content="Jeremy Peng"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Linux中怎么搭建NTP服务器 说明：本次实验采用两台加载CentOS7.7版本的镜像文件的虚拟机，要求一台配置好时间服务之后，由另一台进行同步。  说在前面：ntp和ntpdate区别  两个服务都是centos自带的（centos7中不自带ntp）。ntp的安装包名是ntp；ntpdate的安装包是ntpdate。他们并非由一个安装包提供。 ntp守护进程为ntpd，配置文件是&#x2F;e">
+<meta property="og:type" content="article">
+<meta property="og:title" content="怎么搭建NTP时间服务器">
+<meta property="og:url" content="https://aisk.cc/posts/7.html">
+<meta property="og:site_name" content="攀岩之鹿">
+<meta property="og:description" content="Linux中怎么搭建NTP服务器 说明：本次实验采用两台加载CentOS7.7版本的镜像文件的虚拟机，要求一台配置好时间服务之后，由另一台进行同步。  说在前面：ntp和ntpdate区别  两个服务都是centos自带的（centos7中不自带ntp）。ntp的安装包名是ntp；ntpdate的安装包是ntpdate。他们并非由一个安装包提供。 ntp守护进程为ntpd，配置文件是&#x2F;e">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://file.crazywong.com/gh/jerryc127/CDN@latest/cover/default_bg.png">
+<meta property="article:published_time" content="2020-04-18T03:00:00.000Z">
+<meta property="article:modified_time" content="2023-04-02T12:32:46.050Z">
+<meta property="article:author" content="Jeremy Peng">
+<meta property="article:tag" content="CentOS">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="Windows Server">
+<meta property="article:tag" content="NTP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://file.crazywong.com/gh/jerryc127/CDN@latest/cover/default_bg.png"><link rel="shortcut icon" href="/img/web-logo.png"><link rel="canonical" href="https://aisk.cc/posts/7.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":50,"languages":{"author":"作者: Jeremy Peng","link":"链接: ","source":"来源: 攀岩之鹿","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '怎么搭建NTP时间服务器',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-04-02 20:32:46'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (false) {
+    document.addEventListener('pjax:send', () => { preloader.initLoading() })
+    document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+  }
+})()</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">29</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">12</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/photo/"><i class="fa-fw fa-fw fas fa-images"></i><span> 图片</span></a></li><li><a class="site-page child" href="/video/"><i class="fa-fw fas fa-video"></i><span> 视频</span></a></li></ul></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://192.168.88.252:5001"><i class="fa-fw fas fa-folder-open"></i><span> NAS</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://file.crazywong.com/gh/jerryc127/CDN@latest/cover/default_bg.png')"><nav id="nav"><span id="blog-info"><a href="/" title="攀岩之鹿"><img class="site-icon" src="/img/web-logo.png"/><span class="site-name">攀岩之鹿</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/photo/"><i class="fa-fw fa-fw fas fa-images"></i><span> 图片</span></a></li><li><a class="site-page child" href="/video/"><i class="fa-fw fas fa-video"></i><span> 视频</span></a></li></ul></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://192.168.88.252:5001"><i class="fa-fw fas fa-folder-open"></i><span> NAS</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">怎么搭建NTP时间服务器</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-04-18T03:00:00.000Z" title="发表于 2020-04-18 11:00:00">2020-04-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-04-02T12:32:46.050Z" title="更新于 2023-04-02 20:32:46">2023-04-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%8E%AF%E5%A2%83%E9%83%A8%E7%BD%B2/">环境部署</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>7分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="怎么搭建NTP时间服务器"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="Linux中怎么搭建NTP服务器"><a href="#Linux中怎么搭建NTP服务器" class="headerlink" title="Linux中怎么搭建NTP服务器"></a>Linux中怎么搭建NTP服务器</h2><blockquote>
+<p>说明：本次实验采用两台加载CentOS7.7版本的镜像文件的虚拟机，要求一台配置好时间服务之后，由另一台进行同步。</p>
+</blockquote>
+<p>说在前面：ntp和ntpdate区别</p>
+<ul>
+<li>两个服务都是centos自带的（centos7中不自带ntp）。ntp的安装包名是ntp；ntpdate的安装包是ntpdate。他们并非由一个安装包提供。</li>
+<li>ntp守护进程为ntpd，配置文件是&#x2F;etc&#x2F;ntp.conf</li>
+<li>ntpdate用于客户端的时间矫正，非NTP服务器可以不启动NTP。</li>
+</ul>
+<p>我们先讲一下时间服务器的搭建：</p>
+<p>首先先说一下我们常用的Windows系统的时间是怎样的，我们通过控制面板打开日期和时间，然后选择Internet时间，点击更改设置就可以知道当前的服务器是怎样与时间同步的了。<br>这里要求时间服务器要能上网（为了保证精度），它从外部同步时间，最后给内部主机提供同步。</p>
+<p>先讲几条基础命令</p>
+<table>
+<thead>
+<tr>
+<th align="center">功能</th>
+<th align="left">命令</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">查看时间</td>
+<td align="left">date</td>
+</tr>
+<tr>
+<td align="center">查看硬件时间</td>
+<td align="left">hwclock -r</td>
+</tr>
+<tr>
+<td align="center">查看系统所在时区</td>
+<td align="left">date -R</td>
+</tr>
+<tr>
+<td align="center">查看所有时区</td>
+<td align="left">ls &#x2F;usr&#x2F;share&#x2F;zoneinfo&#x2F; 或者是：timedatectl list-timezones</td>
+</tr>
+<tr>
+<td align="center">查看其它时区的当前时间</td>
+<td align="left">zdump Hongkong</td>
+</tr>
+<tr>
+<td align="center">修改系统时间</td>
+<td align="left">date -s “20190408 17:41:00”</td>
+</tr>
+<tr>
+<td align="center">修改时区①</td>
+<td align="left">tzselect（之后按数字进行选择） vim .bash_profile TZ&#x3D;‘Asia&#x2F;hanghai’; export TZ（粘贴在末尾）source ~&#x2F;.bash_profile</td>
+</tr>
+<tr>
+<td align="center">修改时区②</td>
+<td align="left">timedatectl set-timezone Europe&#x2F;Lisbon</td>
+</tr>
+<tr>
+<td align="center">保存时间修改</td>
+<td align="left">clock -w</td>
+</tr>
+</tbody></table>
+<h3 id="NTP服务的命令、配置"><a href="#NTP服务的命令、配置" class="headerlink" title="NTP服务的命令、配置"></a>NTP服务的命令、配置</h3><h4 id="1、有关ntp的命令"><a href="#1、有关ntp的命令" class="headerlink" title="1、有关ntp的命令"></a>1、有关ntp的命令</h4><table>
+<thead>
+<tr>
+<th align="center">其他命令</th>
+<th align="left">功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">ntpq -p</td>
+<td align="left">查询网络中的NTP服务器，同时显示客户端和每个服务器的连接状态</td>
+</tr>
+<tr>
+<td align="center">ntpdate -q 192.168.0.35</td>
+<td align="left">查看上层服务器状态</td>
+</tr>
+<tr>
+<td align="center">ntpdate 192.168.0.35</td>
+<td align="left">更新时间</td>
+</tr>
+<tr>
+<td align="center">watch ntpdate 192.168.0.35</td>
+<td align="left">这条命令为客户端使用，每2秒会发生一次变化</td>
+</tr>
+</tbody></table>
+<h4 id="2、有关ntpq-p的注解"><a href="#2、有关ntpq-p的注解" class="headerlink" title="2、有关ntpq -p的注解"></a>2、有关ntpq -p的注解</h4><table>
+<thead>
+<tr>
+<th align="center">remote</th>
+<th align="left">远程主机的主机名或IP</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">*</td>
+<td align="left">目前正在使用的上层NTP</td>
+</tr>
+<tr>
+<td align="center">+</td>
+<td align="left">已连线,可提供时间更新的候补服务器</td>
+</tr>
+<tr>
+<td align="center">-</td>
+<td align="left">远程服务器被clustering algorithm认为是不合格的NTP Server</td>
+</tr>
+<tr>
+<td align="center">x</td>
+<td align="left">远程服务器不可用</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th align="center">其它</th>
+<th align="left">注解</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">refid</td>
+<td align="left">上级NTP的时间基准服务器</td>
+</tr>
+<tr>
+<td align="center">st</td>
+<td align="left">就是stratum 上层NTP的层级，层级0-15</td>
+</tr>
+<tr>
+<td align="center">when</td>
+<td align="left">几秒钟前曾做过时间同步更新</td>
+</tr>
+<tr>
+<td align="center">poll</td>
+<td align="left">下一次更新在几秒后，逐步增大</td>
+</tr>
+<tr>
+<td align="center">reach</td>
+<td align="left">八进制数，已经向上层服务器要求更新的次数</td>
+</tr>
+<tr>
+<td align="center">delay</td>
+<td align="left">网络传输过程中的延迟时间</td>
+</tr>
+<tr>
+<td align="center">offset</td>
+<td align="left">本地和服务器之间的时间差别，越接近0，说明和服务器的时间越接近</td>
+</tr>
+<tr>
+<td align="center">jitter linux</td>
+<td align="left">系统时间与bios硬件时钟之间的差异</td>
+</tr>
+</tbody></table>
+<h4 id="3、-x2F-etc-x2F-ntp-conf-ntp的配置文件介绍"><a href="#3、-x2F-etc-x2F-ntp-conf-ntp的配置文件介绍" class="headerlink" title="3、&#x2F;etc&#x2F;ntp.conf ntp的配置文件介绍"></a>3、&#x2F;etc&#x2F;ntp.conf ntp的配置文件介绍</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#系统时间和硬件时间的偏差记录</span></span><br><span class="line">driftfile /var/lib/ntp/drift</span><br><span class="line"><span class="comment">#允许所有的访问，</span></span><br><span class="line">restrict default nomodify notrap nopeer noquery`</span><br><span class="line"><span class="comment">#允许 192.168.221.0网段访问</span></span><br><span class="line">restrict [192.168.221.0] mask [255.255.255.0] [parameter]</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th align="center">parameter的参数</th>
+<th align="left">注解</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">ignore</td>
+<td align="left">拒绝所有类型的ntp连接</td>
+</tr>
+<tr>
+<td align="center">nomodify</td>
+<td align="left">客户端不能使用ntpc与ntpq两支程式来修改服务器的时间参数</td>
+</tr>
+<tr>
+<td align="center">noquery</td>
+<td align="left">客户端不能使用ntpq、ntpc等指令来查询服务器时间，等于不提供ntp的网络校时</td>
+</tr>
+<tr>
+<td align="center">notrap</td>
+<td align="left">不提供trap这个远程时间登录的功能</td>
+</tr>
+<tr>
+<td align="center">notrust</td>
+<td align="left">拒绝没有认证的客户端</td>
+</tr>
+<tr>
+<td align="center">nopeer</td>
+<td align="left">不与其他同一层的ntp服务器进行时间同步</td>
+</tr>
+</tbody></table>
+<h3 id="搭建NTP服务"><a href="#搭建NTP服务" class="headerlink" title="搭建NTP服务"></a>搭建NTP服务</h3><p>关闭防火墙</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl stop firewalld.service</span><br></pre></td></tr></table></figure>
+<p>安装ntp包</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install ntp -y</span><br></pre></td></tr></table></figure>
+<p>编辑配置文件</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vim /etc/ntp.conf</span><br></pre></td></tr></table></figure>
+<p>可以将中间的几行默认上层时间的服务器注释掉，也可以不注释掉。注释掉之后我们这台时间服务器就没法向外部服务器同步了，我是为了方便演示，后面加上图中的指令：表示使用本地时间作为ntp服务器提供给ntp客户端。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">restrict 192.168.0.0 mask 255.255.255.0 modify notrap</span><br><span class="line"><span class="comment">#为192.168.0.0网段提供授时服务</span></span><br><span class="line">server 127.127.1.0  prefer</span><br><span class="line"><span class="comment">#prefer代表这台主机优先级最高</span></span><br><span class="line">fudge 1127.127.1.0 stratum 8</span><br><span class="line"><span class="comment">#指定服务器为本地，设置层级为8</span></span><br><span class="line">systemctl restart ntpd</span><br><span class="line"><span class="comment">#重启服务。</span></span><br></pre></td></tr></table></figure>
+
+<p>我们可以使用 <code>netstat -nlutp | grep ntp</code> 可以查看与ntp服务有关联的进程。</p>
+<p>如果客户机上安装有ntp，在客户端需要修改<code>/etc/ntp.conf</code>，添加以下内容</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">server 192.168.0.1    <span class="comment">#指名上层NTP服务器</span></span><br><span class="line">restrict 192.168.0.1       <span class="comment">#放行156.0.26.6</span></span><br></pre></td></tr></table></figure>
+
+<p>修改保存后使用<code>ntpq -p</code>命令查看</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[root@centos]<span class="comment"># ntpq -p</span></span><br><span class="line">   remote       refid      st t  when  poll reach  delay  offset  jitter</span><br><span class="line"> ========================================================================</span><br><span class="line">   192.168.0.1    LOCAL(0)  3 u   93   1   377   0.676   -0.563   0.545</span><br></pre></td></tr></table></figure>
+
+<p>未安装ntp可使用ntpdate定时同步<br>设置计划任务，编辑配置文件之后，让它实现一开机就自动同步。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vim /etc/crontab</span><br><span class="line"><span class="comment">#插入下面这句话：</span></span><br><span class="line">*/30 * * * * root /usr/sbin/ntpdate 192.168.0.1 &gt; /dev/null 2&gt;&amp;1</span><br><span class="line"><span class="comment">#每30秒同步一次</span></span><br></pre></td></tr></table></figure>
+<p>linux shell中<code>&quot;2&gt;&amp;1&quot;</code>含义</p>
+<table>
+<thead>
+<tr>
+<th align="center">命令</th>
+<th align="left">注解</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">&gt;</td>
+<td align="left">重定向</td>
+</tr>
+<tr>
+<td align="center">&#x2F;dev&#x2F;null</td>
+<td align="left">代表空设备</td>
+</tr>
+<tr>
+<td align="center">2	stderr</td>
+<td align="left">标准错误</td>
+</tr>
+<tr>
+<td align="center">&amp;</td>
+<td align="left">表示等同于</td>
+</tr>
+<tr>
+<td align="center">2&gt;1&amp;1</td>
+<td align="left">将标准错误重定向到标准输出</td>
+</tr>
+</tbody></table>
+<h2 id="windows搭建NTP时钟服务器"><a href="#windows搭建NTP时钟服务器" class="headerlink" title="windows搭建NTP时钟服务器"></a>windows搭建NTP时钟服务器</h2><h3 id="配置-NTP"><a href="#配置-NTP" class="headerlink" title="配置 NTP"></a>配置 NTP</h3><h4 id="修改注册表项"><a href="#修改注册表项" class="headerlink" title="修改注册表项"></a>修改注册表项</h4><p>在搜索框中打开注册表，使用命令： <code>regedit</code>，进入注册表项<code>HKEY_LOCAL_MACHINE—&gt;SYSTEM—&gt;CurrentControlSet—&gt;Services—&gt;W32Time—&gt;TimeProviders—&gt;NtpServer</code></p>
+<p>把<code>Enabled</code> 值设置为 1打开NTP，（系统默认0）。</p>
+<p>进入注册表项<code>HKEY_LOCAL_MACHINE—&gt;SYSTEM—&gt;CurrentControlSet—&gt;Services—&gt;W32Time—&gt;Config</code></p>
+<p>把<code>AnnounceFlags</code>值设置为 5 （系统默认 10）。该设定强制主机将它自身宣布为可靠的时间源，从而使用内置的互补金属氧化物半导体(CMOS) 时钟。</p>
+<p><code>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\W32Time\TimeProviders\NtpClient</code>的「enable」设定为0 以防止作为客户端自动同步外界的时间服务。</p>
+<h4 id="启动时间服务"><a href="#启动时间服务" class="headerlink" title="启动时间服务"></a>启动时间服务</h4><p>找到Windows time服务，使用命令：<code>services.msc</code></p>
+<p>将Windows time服务设置为自动启动，点击应用和确定，重新启动电脑或者主机，所有配置生效。</p>
+<p>NTP时钟搭建完毕，此时只需其他设备将本电脑IP填入时钟同步，点击更新即可同步改时钟</p>
+<p>打开客户机控制面板，日期和时间，修改 Internet 时间中地址。</p>
+<h4 id="域控中配置组策略"><a href="#域控中配置组策略" class="headerlink" title="域控中配置组策略"></a>域控中配置组策略</h4><p>运行输入<code>gpedit.msc</code>，计算机配置–&gt;管理模板–&gt;系统–&gt;Windows时间服务–&gt;时间提供程序–&gt;右单击“配置Window NTP客户端”，选择属性。</p>
+<ul>
+<li>选择“已启用”</li>
+<li>在Ntp Server对应栏位输入时间同步服务器的地址。</li>
+<li>Tpye栏位选择NTP。</li>
+<li>SpecialPollInterval栏位输入需要同步的时间周期，单位：秒，如：每10分钟同步一次，输入600。</li>
+</ul>
+<p>计算机配置–&gt;管理模板–&gt;系统–&gt;Windows时间服务–&gt;时间提供程序–&gt;右单击“启用Window NTP客户端”，选择“已启用”</p>
+<p>计算机配置–&gt;管理模板–&gt;系统–&gt;Windows时间服务–&gt;时间提供程序–&gt;右单击“启用Window NTP服务端”，选择“已禁用”</p>
+<p>时间和日期属性中，填入时间同步服务器地址，方便必要时进行手动同步。</p>
+<h4 id="时间同步服务间隔时间太长"><a href="#时间同步服务间隔时间太长" class="headerlink" title="时间同步服务间隔时间太长"></a>时间同步服务间隔时间太长</h4><p>由于Windows时间同步服务距上次同步时间较长，造成时间显示不正常。</p>
+<p>解决方法：打开注册表编辑器（在运行对话框输入“regedit”），定位到<code>HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\services\W32Time\TimeProviders\NtpClient</code>然后找到为<code>SpecialPolllnterval</code>的键，将键值的基数改为“十进制”接着把键值数据改为“1800”(30分钟)默认是“604800”(7天),（根据自己的需求填入，记住单位是秒），按F5刷新一下，就可以了。</p>
+<h4 id="时间同步地址注册表快速更改"><a href="#时间同步地址注册表快速更改" class="headerlink" title="时间同步地址注册表快速更改"></a>时间同步地址注册表快速更改</h4><figure class="highlight bat"><table><tr><td class="code"><pre><span class="line">Windows Registry Editor Version <span class="number">5</span>.<span class="number">00</span></span><br><span class="line">[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\DateTime\Servers]</span><br><span class="line">@=&quot;<span class="number">0</span>&quot;</span><br><span class="line">&quot;<span class="number">0</span>&quot;=&quot;ntp1.aliyun.com&quot;</span><br><span class="line">&quot;<span class="number">1</span>&quot;=&quot;ntp2.aliyun.com&quot;</span><br><span class="line">&quot;<span class="number">2</span>&quot;=&quot;<span class="built_in">time</span>.windows.com&quot;</span><br><span class="line">&quot;<span class="number">3</span>&quot;=&quot;<span class="built_in">time</span>.nist.gov&quot;</span><br><span class="line"></span><br><span class="line">[HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\services\W32Time\TimeProviders\NtpClient]</span><br><span class="line">&#x27;SpecialPolllnterval&#x27;=&quot;<span class="number">1800</span>&quot;</span><br></pre></td></tr></table></figure>
+
+<p>另存为NTP.reg文件,双击导入</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://aisk.cc">Jeremy Peng</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://aisk.cc/posts/7.html">https://aisk.cc/posts/7.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://aisk.cc" target="_blank">攀岩之鹿</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/CentOS/">CentOS</a><a class="post-meta__tags" href="/tags/Linux/">Linux</a><a class="post-meta__tags" href="/tags/Windows-Server/">Windows Server</a><a class="post-meta__tags" href="/tags/NTP/">NTP</a></div><div class="post_share"><div class="social-share" data-image="https://file.crazywong.com/gh/jerryc127/CDN@latest/cover/default_bg.png" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/posts/58b2.html" title="Ubuntu全盘备份与恢复，亲自总结，实测可靠"><img class="cover" src="https://file.crazywong.com/gh/jerryc127/CDN@latest/cover/default_bg.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Ubuntu全盘备份与恢复，亲自总结，实测可靠</div></div></a></div><div class="next-post pull-right"><a href="/posts/5.html" title="ubuntu 16.04 硬盘分区，挂载，硬盘分区方案"><img class="cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">ubuntu 16.04 硬盘分区，挂载，硬盘分区方案</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/posts/e3a7.html" title="Centos7双网卡绑定配置 bonding"><img class="cover" src="https://i.loli.net/2019/11/10/T7Mu8Aod3egmC4Q.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-29</div><div class="title">Centos7双网卡绑定配置 bonding</div></div></a></div><div><a href="/posts/9014.html" title="Linux系统单用户模式"><img class="cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-05-02</div><div class="title">Linux系统单用户模式</div></div></a></div><div><a href="/posts/efc.html" title="Linux系统安装之后，如何调节CPU性能策略"><img class="cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-04-25</div><div class="title">Linux系统安装之后，如何调节CPU性能策略</div></div></a></div><div><a href="/posts/d931.html" title="Linux安全加固措施方案之密码加固"><img class="cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-08</div><div class="title">Linux安全加固措施方案之密码加固</div></div></a></div><div><a href="/posts/fa9f.html" title="Linux 存储扩容，分区扩容"><img class="cover" src="https://i.loli.net/2019/11/10/T7Mu8Aod3egmC4Q.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-06-10</div><div class="title">Linux 存储扩容，分区扩容</div></div></a></div><div><a href="/posts/76b2.html" title="Linux磁盘分区并挂载"><img class="cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2021-10-20</div><div class="title">Linux磁盘分区并挂载</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Linux%E4%B8%AD%E6%80%8E%E4%B9%88%E6%90%AD%E5%BB%BANTP%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="toc-number">1.</span> <span class="toc-text">Linux中怎么搭建NTP服务器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#NTP%E6%9C%8D%E5%8A%A1%E7%9A%84%E5%91%BD%E4%BB%A4%E3%80%81%E9%85%8D%E7%BD%AE"><span class="toc-number">1.1.</span> <span class="toc-text">NTP服务的命令、配置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E3%80%81%E6%9C%89%E5%85%B3ntp%E7%9A%84%E5%91%BD%E4%BB%A4"><span class="toc-number">1.1.1.</span> <span class="toc-text">1、有关ntp的命令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%E3%80%81%E6%9C%89%E5%85%B3ntpq-p%E7%9A%84%E6%B3%A8%E8%A7%A3"><span class="toc-number">1.1.2.</span> <span class="toc-text">2、有关ntpq -p的注解</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E3%80%81-x2F-etc-x2F-ntp-conf-ntp%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.1.3.</span> <span class="toc-text">3、&#x2F;etc&#x2F;ntp.conf ntp的配置文件介绍</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%90%AD%E5%BB%BANTP%E6%9C%8D%E5%8A%A1"><span class="toc-number">1.2.</span> <span class="toc-text">搭建NTP服务</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#windows%E6%90%AD%E5%BB%BANTP%E6%97%B6%E9%92%9F%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="toc-number">2.</span> <span class="toc-text">windows搭建NTP时钟服务器</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE-NTP"><span class="toc-number">2.1.</span> <span class="toc-text">配置 NTP</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E6%B3%A8%E5%86%8C%E8%A1%A8%E9%A1%B9"><span class="toc-number">2.1.1.</span> <span class="toc-text">修改注册表项</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8%E6%97%B6%E9%97%B4%E6%9C%8D%E5%8A%A1"><span class="toc-number">2.1.2.</span> <span class="toc-text">启动时间服务</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9F%9F%E6%8E%A7%E4%B8%AD%E9%85%8D%E7%BD%AE%E7%BB%84%E7%AD%96%E7%95%A5"><span class="toc-number">2.1.3.</span> <span class="toc-text">域控中配置组策略</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%B6%E9%97%B4%E5%90%8C%E6%AD%A5%E6%9C%8D%E5%8A%A1%E9%97%B4%E9%9A%94%E6%97%B6%E9%97%B4%E5%A4%AA%E9%95%BF"><span class="toc-number">2.1.4.</span> <span class="toc-text">时间同步服务间隔时间太长</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%B6%E9%97%B4%E5%90%8C%E6%AD%A5%E5%9C%B0%E5%9D%80%E6%B3%A8%E5%86%8C%E8%A1%A8%E5%BF%AB%E9%80%9F%E6%9B%B4%E6%94%B9"><span class="toc-number">2.1.5.</span> <span class="toc-text">时间同步地址注册表快速更改</span></a></li></ol></li></ol></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By Jeremy Peng</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">我的其它站点：<a href="https://aisk.cc/" target="_blank" rel="noopener">aisk.cc</a>、<a href="https://baize.cc/" target="_blank" rel="noopener">baize.cc</a><br>留下运维点滴记忆，悠悠岁月慢慢回味。</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

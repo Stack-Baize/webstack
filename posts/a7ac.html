@@ -1,0 +1,238 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>CentOS8编译安装配置MySQL8数据库 | 攀岩之鹿</title><meta name="author" content="Jeremy Peng"><meta name="copyright" content="Jeremy Peng"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="安装环境操作系统：CentOS 8.1 MySQL版本：MySQL-8.0.18 环境配置1、系统安装略 防火墙配置CentOS 从7.x开始默认使用的是firewall作为防火墙，这里改为iptables防火墙。 1、关闭firewallsystemctl stop firewalld.service #停止firewallsystemctl disable firewalld.service">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CentOS8编译安装配置MySQL8数据库">
+<meta property="og:url" content="https://aisk.cc/posts/a7ac.html">
+<meta property="og:site_name" content="攀岩之鹿">
+<meta property="og:description" content="安装环境操作系统：CentOS 8.1 MySQL版本：MySQL-8.0.18 环境配置1、系统安装略 防火墙配置CentOS 从7.x开始默认使用的是firewall作为防火墙，这里改为iptables防火墙。 1、关闭firewallsystemctl stop firewalld.service #停止firewallsystemctl disable firewalld.service">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2019/11/10/T7Mu8Aod3egmC4Q.png">
+<meta property="article:published_time" content="2020-09-22T03:00:00.000Z">
+<meta property="article:modified_time" content="2023-04-02T12:32:46.050Z">
+<meta property="article:author" content="Jeremy Peng">
+<meta property="article:tag" content="CentOS">
+<meta property="article:tag" content="数据库">
+<meta property="article:tag" content="MySQL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2019/11/10/T7Mu8Aod3egmC4Q.png"><link rel="shortcut icon" href="/img/web-logo.png"><link rel="canonical" href="https://aisk.cc/posts/a7ac.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":50,"languages":{"author":"作者: Jeremy Peng","link":"链接: ","source":"来源: 攀岩之鹿","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"你已切换为繁体","cht_to_chs":"你已切换为简体","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'CentOS8编译安装配置MySQL8数据库',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-04-02 20:32:46'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (false) {
+    document.addEventListener('pjax:send', () => { preloader.initLoading() })
+    document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+  }
+})()</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">29</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">12</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/photo/"><i class="fa-fw fa-fw fas fa-images"></i><span> 图片</span></a></li><li><a class="site-page child" href="/video/"><i class="fa-fw fas fa-video"></i><span> 视频</span></a></li></ul></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://192.168.88.252:5001"><i class="fa-fw fas fa-folder-open"></i><span> NAS</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://i.loli.net/2019/11/10/T7Mu8Aod3egmC4Q.png')"><nav id="nav"><span id="blog-info"><a href="/" title="攀岩之鹿"><img class="site-icon" src="/img/web-logo.png"/><span class="site-name">攀岩之鹿</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 列表</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/photo/"><i class="fa-fw fa-fw fas fa-images"></i><span> 图片</span></a></li><li><a class="site-page child" href="/video/"><i class="fa-fw fas fa-video"></i><span> 视频</span></a></li></ul></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://192.168.88.252:5001"><i class="fa-fw fas fa-folder-open"></i><span> NAS</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 链接</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">CentOS8编译安装配置MySQL8数据库</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-09-22T03:00:00.000Z" title="发表于 2020-09-22 11:00:00">2020-09-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-04-02T12:32:46.050Z" title="更新于 2023-04-02 20:32:46">2023-04-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.6k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>7分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="CentOS8编译安装配置MySQL8数据库"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="安装环境"><a href="#安装环境" class="headerlink" title="安装环境"></a>安装环境</h2><p>操作系统：CentOS 8.1</p>
+<p>MySQL版本：MySQL-8.0.18</p>
+<h2 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h2><h3 id="1、系统安装"><a href="#1、系统安装" class="headerlink" title="1、系统安装"></a>1、系统安装</h3><p>略</p>
+<h3 id="防火墙配置"><a href="#防火墙配置" class="headerlink" title="防火墙配置"></a>防火墙配置</h3><p>CentOS 从7.x开始默认使用的是firewall作为防火墙，这里改为iptables防火墙。</p>
+<h4 id="1、关闭firewall"><a href="#1、关闭firewall" class="headerlink" title="1、关闭firewall"></a>1、关闭firewall</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl stop firewalld.service <span class="comment">#停止firewall</span></span><br><span class="line">systemctl <span class="built_in">disable</span> firewalld.service <span class="comment">#禁止firewall开机启动</span></span><br><span class="line">systemctl mask firewalld</span><br><span class="line">systemctl stop firewalld</span><br><span class="line">yum remove firewalld</span><br></pre></td></tr></table></figure>
+
+<h4 id="2、安装iptables防火墙"><a href="#2、安装iptables防火墙" class="headerlink" title="2、安装iptables防火墙"></a>2、安装iptables防火墙</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install iptables-services <span class="comment">#安装</span></span><br><span class="line">vi /etc/sysconfig/iptables <span class="comment">#编辑防火墙配置文件，开发mysql默认端口3306</span></span><br><span class="line">-A INPUT -p tcp -m state --state NEW -m tcp --dport 3306 -j ACCEPT</span><br><span class="line">systemctl restart iptables.service <span class="comment">#最后重启防火墙使配置生效</span></span><br><span class="line">systemctl <span class="built_in">enable</span> iptables.service <span class="comment">#设置防火墙开机启动</span></span><br><span class="line">/usr/libexec/iptables/iptables.init restart <span class="comment">#重启防火墙</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="关闭SELINUX"><a href="#关闭SELINUX" class="headerlink" title="关闭SELINUX"></a>关闭SELINUX</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /etc/selinux/config</span><br><span class="line"><span class="comment">#SELINUX=enforcing #注释掉</span></span><br><span class="line"><span class="comment">#SELINUXTYPE=targeted #注释掉</span></span><br><span class="line">SELINUX=disabled <span class="comment">#增加</span></span><br><span class="line">:wq! <span class="comment">#保存退出</span></span><br><span class="line">setenforce 0 <span class="comment">#使配置立即生效</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="编译安装"><a href="#编译安装" class="headerlink" title="编译安装"></a>编译安装</h2><h3 id="规划目录"><a href="#规划目录" class="headerlink" title="规划目录"></a>规划目录</h3><p>软件源代码包存放位置：<code>/usr/local/src</code></p>
+<p>源码包编译安装位置：<code>/usr/local/软件名字</code></p>
+<h3 id="下载软件包"><a href="#下载软件包" class="headerlink" title="下载软件包"></a>下载软件包</h3><h4 id="1、mysql"><a href="#1、mysql" class="headerlink" title="1、mysql"></a>1、mysql</h4><p><code>https://cdn.mysql.com//Downloads/MySQL-8.0/mysql-8.0.18.tar.gz</code></p>
+<h4 id="2、rpcsvc-proto-CentOS-8编译安装MySQL8需要"><a href="#2、rpcsvc-proto-CentOS-8编译安装MySQL8需要" class="headerlink" title="2、rpcsvc-proto #CentOS 8编译安装MySQL8需要"></a>2、rpcsvc-proto #CentOS 8编译安装MySQL8需要</h4><p><code>https://github.com/thkukuk/rpcsvc-proto/releases/download/v1.4/rpcsvc-proto-1.4.tar.gz</code></p>
+<h4 id="3、boost-1-70-0-CentOS-8编译安装MySQL8需要"><a href="#3、boost-1-70-0-CentOS-8编译安装MySQL8需要" class="headerlink" title="3、boost_1_70_0 #CentOS 8编译安装MySQL8需要"></a>3、boost_1_70_0 #CentOS 8编译安装MySQL8需要</h4><p><code>https://dl.bintray.com/boostorg/release/1.70.0/source/boost_1_70_0.tar.gz</code></p>
+<h4 id="4、cmake-编译安装MySQL需要"><a href="#4、cmake-编译安装MySQL需要" class="headerlink" title="4、cmake #编译安装MySQL需要"></a>4、cmake #编译安装MySQL需要</h4><p><code>https://github.com/Kitware/CMake/releases/download/v3.15.4/cmake-3.15.4.tar.gz</code></p>
+<h4 id="五、安装编译工具及库文件（使用yum命令安装）"><a href="#五、安装编译工具及库文件（使用yum命令安装）" class="headerlink" title="五、安装编译工具及库文件（使用yum命令安装）"></a>五、安装编译工具及库文件（使用yum命令安装）</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install apr* autoconf automake bison bzip2 bzip2* cpp curl curl-devel fontconfig fontconfig-devel freetype-devel gcc gcc-c++ gd gd-devel gettext gettext-devel glibc kernel kernel-headers keyutils keyutils-libs-devel krb5-devel libcom_err-devel libpng libpng-devel libjpeg* libsepol-devel libselinux-devel libstdc++-devel libtool* libgomp libxml2 libxml2-devel libXpm* libxml* libXaw-devel libXmu-devel libtiff libtiff* make openssl openssl-devel patch pcre-devel perl php-common php-gd policycoreutils telnet wget zlib-devel ncurses-devel libtirpc-devel gtk* ntpstat na* bison*</span><br></pre></td></tr></table></figure>
+
+<h3 id="安装篇"><a href="#安装篇" class="headerlink" title="安装篇"></a>安装篇</h3><p>以下是用putty工具远程登录到服务器，在命令行下面操作的</p>
+<h4 id="一、安装MySQL"><a href="#一、安装MySQL" class="headerlink" title="一、安装MySQL"></a>一、安装MySQL</h4><h5 id="1、安装rpcsvc-proto"><a href="#1、安装rpcsvc-proto" class="headerlink" title="1、安装rpcsvc-proto"></a>1、安装rpcsvc-proto</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /usr/local/src</span><br><span class="line">tar zxvf rpcsvc-proto-1.4.tar.gz</span><br><span class="line"><span class="built_in">cd</span> rpcsvc-proto-1.4</span><br><span class="line">./configure</span><br><span class="line">make</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+
+<h5 id="2、安装cmake"><a href="#2、安装cmake" class="headerlink" title="2、安装cmake"></a>2、安装cmake</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /usr/local/src</span><br><span class="line">tar zxvf cmake-3.15.4.tar.gz</span><br><span class="line"><span class="built_in">cd</span> cmake-3.15.4</span><br><span class="line">./configure</span><br><span class="line">make</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+
+<h5 id="3、安装MySQL"><a href="#3、安装MySQL" class="headerlink" title="3、安装MySQL"></a>3、安装MySQL</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> /usr/local/src</span><br><span class="line"><span class="built_in">mkdir</span> -p /usr/local/boost</span><br><span class="line"><span class="built_in">cp</span> boost_1_70_0.tar.gz /usr/local/boost</span><br><span class="line">groupadd mysql <span class="comment">#添加mysql组</span></span><br><span class="line">useradd -g mysql mysql -s /bin/false <span class="comment">#创建用户mysql并加入到mysql组，不允许mysql用户直接登录系统</span></span><br><span class="line"><span class="built_in">mkdir</span> -p /data/mysql <span class="comment">#创建MySQL数据库存放目录</span></span><br><span class="line"><span class="built_in">chown</span> -R mysql:mysql /data/mysql <span class="comment">#设置MySQL数据库存放目录权限</span></span><br><span class="line"><span class="built_in">mkdir</span> -p /usr/local/mysql <span class="comment">#创建MySQL安装目录</span></span><br><span class="line"><span class="built_in">cd</span> /usr/local/src <span class="comment">#进入软件包存放目录</span></span><br><span class="line">tar zxvf mysql-8.0.18.tar.gz <span class="comment">#解压</span></span><br><span class="line"><span class="built_in">cd</span> mysql-8.0.18 <span class="comment">#进入目录</span></span><br><span class="line">cmake . -DCMAKE_INSTALL_PREFIX=/usr/local/mysql -DINSTALL_DATADIR=/data/mysql -DMYSQL_USER=mysql -DMYSQL_UNIX_ADDR=/tmp/mysqld.sock -DDEFAULT_CHARSET=utf8 -DDEFAULT_COLLATION=utf8_general_ci -DWITH_INNOBASE_STORAGE_ENGINE=1 -DWITH_EMBEDDED_SERVER=1 -DFORCE_INSOURCE_BUILD=1 -DWITH_MYISAM_STORAGE_ENGINE=1 -DENABLED_LOCAL_INFILE=1 -DEXTRA_CHARSETS=all -DWITH_BOOST=/usr/local/boost</span><br><span class="line">make <span class="comment">#编译</span></span><br><span class="line">make install <span class="comment">#安装</span></span><br><span class="line"><span class="built_in">rm</span> -rf /etc/my.cnf  <span class="comment">#删除系统默认的配置文件（如果默认没有就不用删除）</span></span><br><span class="line"><span class="built_in">cd</span> /usr/local/mysql <span class="comment">#进入MySQL安装目录</span></span><br><span class="line">./bin/mysqld --user=mysql --initialize --basedir=/usr/local/mysql --datadir=/data/mysql <span class="comment">#生成mysql系统数据库 --initialize表示默认生成密码, --initialize-insecure 表示不生成密码, 密码为空。</span></span><br><span class="line"><span class="comment">#看到这一行[Note] [MY-010454] [Server] A temporary password is generated for root@localhost: !w1YKyVFFa?-</span></span><br></pre></td></tr></table></figure>
+<p>记录下自动生成的mysql管理员root账号登录密码<code>!w1YKyVFFa?-</code></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /usr/local/mysql/my.cnf</span><br><span class="line"><span class="comment">#mysql 8.x默认没有配置文件，我们自己创建一个。</span></span><br><span class="line">[client]</span><br><span class="line">port=3306</span><br><span class="line">socket=/tmp/mysql.sock</span><br><span class="line">[mysqld]</span><br><span class="line">port=3306</span><br><span class="line">user = mysql</span><br><span class="line">socket=/tmp/mysql.sock</span><br><span class="line">tmpdir = /tmp</span><br><span class="line">key_buffer_size=16M</span><br><span class="line">max_allowed_packet=128M</span><br><span class="line">default_authentication_plugin=mysql_native_password</span><br><span class="line"><span class="comment">#设置加密方式为mysql_native_password，MySQL 8.0默认使用caching_sha2_password加密。</span></span><br><span class="line">open_files_limit = 60000</span><br><span class="line">explicit_defaults_for_timestamp</span><br><span class="line">server-id = 1</span><br><span class="line">character-set-server = utf8</span><br><span class="line">federated</span><br><span class="line">max_connections = 1000</span><br><span class="line">max_connect_errors = 100000</span><br><span class="line">interactive_timeout = 86400</span><br><span class="line">wait_timeout = 86400</span><br><span class="line">sync_binlog=0</span><br><span class="line">back_log=100</span><br><span class="line">default-storage-engine = InnoDB</span><br><span class="line">log_slave_updates = 1</span><br><span class="line">[mysqldump]</span><br><span class="line">quick</span><br><span class="line">[client]</span><br><span class="line"><span class="comment"># The following password will be sent to all standard MySQL clients</span></span><br><span class="line">password=<span class="string">&quot;my password&quot;</span></span><br><span class="line">[mysqld-8.0]</span><br><span class="line">sql_mode=TRADITIONAL</span><br><span class="line">[mysqladmin]</span><br><span class="line">force</span><br><span class="line">[mysqld]</span><br><span class="line">key_buffer_size=16M</span><br></pre></td></tr></table></figure>
+
+<p>:wq! #保存退出</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">ln</span> -s /usr/local/mysql/my.cnf /etc/my.cnf  <span class="comment">#添加到/etc目录的软连接</span></span><br><span class="line"><span class="built_in">cp</span> /usr/local/mysql/support-files/mysql.server /etc/rc.d/init.d/mysqld <span class="comment">#把Mysql加入系统启动</span></span><br><span class="line"><span class="built_in">chmod</span> 755 /etc/init.d/mysqld <span class="comment">#增加执行权限</span></span><br><span class="line">chkconfig mysqld on <span class="comment">#加入开机启动</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vi /etc/rc.d/init.d/mysqld <span class="comment">#编辑</span></span><br><span class="line">basedir=/usr/local/mysql <span class="comment">#MySQL程序安装路径</span></span><br><span class="line">datadir=/data/mysql <span class="comment">#MySQl数据库存放目录</span></span><br></pre></td></tr></table></figure>
+
+<p>:wq! #保存退出</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">service mysqld start <span class="comment">#启动</span></span><br><span class="line">vi /etc/profile <span class="comment">#把mysql服务加入系统环境变量：在最后添加下面这一行</span></span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:/usr/local/mysql/bin</span><br></pre></td></tr></table></figure>
+
+<p>:wq! #保存退出</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">source</span> /etc/profile <span class="comment">#使配置立刻生效</span></span><br></pre></td></tr></table></figure>
+
+<p>下面这两行把myslq的库文件链接到系统默认的位置，这样你在编译类似PHP等软件时可以不用指定mysql的库文件地址。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">ln</span> -s /usr/local/mysql/lib/mysql /usr/lib/mysql</span><br><span class="line"><span class="built_in">ln</span> -s /usr/local/mysql/include/mysql /usr/include/mysql</span><br><span class="line"><span class="built_in">mkdir</span> /var/lib/mysql <span class="comment">#创建目录</span></span><br><span class="line"><span class="built_in">ln</span> -s /tmp/mysql.sock /var/lib/mysql/mysql.sock <span class="comment">#添加软链接</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">mysql -u root -p  <span class="comment">#输入之前生成的密码!w1YKyVFFa?-，回车</span></span><br><span class="line">ALTER USER <span class="string">&#x27;root&#x27;</span>@<span class="string">&#x27;localhost&#x27;</span> IDENTIFIED BY <span class="string">&#x27;123456&#x27;</span> PASSWORD EXPIRE NEVER; <span class="comment">#修改密码，NEVER表示密码永不过期</span></span><br><span class="line">ALTER USER <span class="string">&#x27;root&#x27;</span>@<span class="string">&#x27;localhost&#x27;</span> IDENTIFIED WITH mysql_native_password BY <span class="string">&#x27;123456&#x27;</span> PASSWORD EXPIRE NEVER;</span><br><span class="line"><span class="comment">#使用WITH mysql_native_password加密</span></span><br><span class="line"><span class="comment">#MySQL 8.0加密方式从mysql_native_password 更改为 caching_sha2_password，mysql8.x之前的客户端远程连接可能报错：authentication plugin caching_sha2</span></span><br><span class="line">flush privileges;  <span class="comment">#刷新系统授权表</span></span><br><span class="line"><span class="built_in">exit</span>  <span class="comment">#退出mysql控制台</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="二、创建MySQL数据库、添加用户并授权"><a href="#二、创建MySQL数据库、添加用户并授权" class="headerlink" title="二、创建MySQL数据库、添加用户并授权"></a>二、创建MySQL数据库、添加用户并授权</h3><p>数据库名称：aiotlab-db<br>数据库用户名：aiotlab<br>数据库密码：aiotlab<br>授权aiotlab用户对aiotlab-db具有全部操作权限<br>继续在mysql控制台操作</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">mysql -u root -p</span><br><span class="line"><span class="comment">#输入刚刚修改过的密码123456，回车</span></span><br><span class="line">Create DATABASE IF NOT EXISTS aiotlab-db default charset utf8 COLLATE utf8_general_ci;</span><br><span class="line"><span class="comment">#创建数据库</span></span><br><span class="line">CREATE USER <span class="string">&#x27;aiotlab&#x27;</span>@<span class="string">&#x27;localhost&#x27;</span> IDENTIFIED BY <span class="string">&#x27;aiotlab&#x27;</span>;</span><br><span class="line"><span class="comment">#创建用户</span></span><br><span class="line">CREATE USER <span class="string">&#x27;aiotlab&#x27;</span>@<span class="string">&#x27;127.0.0.1&#x27;</span> IDENTIFIED WITH mysql_native_password BY <span class="string">&#x27;aiotlab&#x27;</span>;</span><br><span class="line"><span class="comment">#加密方式为mysql_native_password</span></span><br><span class="line">grant all privileges on aiotlab-db.* to <span class="string">&#x27;aiotlab&#x27;</span>@<span class="string">&#x27;localhost&#x27;</span>;</span><br><span class="line"><span class="comment">#授权用户osyunwei.com对数据库www.osyunwei.com具有全部操作权限</span></span><br><span class="line">grant all privileges on aiotlab-db.* to <span class="string">&#x27;aiotlab&#x27;</span>@<span class="string">&#x27;127.0.0.1&#x27;</span>;</span><br><span class="line"><span class="comment">#授权用户</span></span><br><span class="line">GRANT ALL PRIVILEGES ON *.* TO <span class="string">&#x27;root&#x27;</span>@<span class="string">&#x27;localhost&#x27;</span> WITH GRANT OPTION;</span><br><span class="line"><span class="comment">#授权root用户具有全部数据库本地权限</span></span><br></pre></td></tr></table></figure>
+
+<p>MySQL5.7版本后要授权用户对所有数据库有SUPER权限，否则上一步对用户的授权只能连接但无任何操作权限。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">grant SUPER on *.* to <span class="string">&#x27;aiotlab&#x27;</span>@<span class="string">&#x27;localhost&#x27;</span>;</span><br><span class="line"><span class="comment">#授予用户对所有数据库有SUPER权限，否则只能连接无任何操作权限。</span></span><br><span class="line">grant SUPER on *.* to <span class="string">&#x27;aiotlab&#x27;</span>@<span class="string">&#x27;127.0.0.1&#x27;</span>;</span><br><span class="line">flush privileges;</span><br><span class="line"><span class="comment">#刷新系统授权表</span></span><br><span class="line"><span class="built_in">exit</span> <span class="comment">#退出mysql控制台</span></span><br><span class="line">service mysqld restart</span><br><span class="line"><span class="comment">#重启mysql数据库</span></span><br></pre></td></tr></table></figure>
+
+<p>至此，CentOS 8.x安装MySQL 8.x并创建数据库添加用户对用户进行授权完成。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://aisk.cc">Jeremy Peng</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://aisk.cc/posts/a7ac.html">https://aisk.cc/posts/a7ac.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://aisk.cc" target="_blank">攀岩之鹿</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/CentOS/">CentOS</a><a class="post-meta__tags" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><a class="post-meta__tags" href="/tags/MySQL/">MySQL</a></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2019/11/10/T7Mu8Aod3egmC4Q.png" data-sites="wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/posts/5d00.html" title="安装配置Docker环境"><img class="cover" src="https://i.loli.net/2019/11/10/T7Mu8Aod3egmC4Q.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">安装配置Docker环境</div></div></a></div><div class="next-post pull-right"><a href="/posts/688b.html" title="修改MySQL数据库字符编码为utf8mb4解决中文乱码"><img class="cover" src="https://file.crazywong.com/gh/jerryc127/CDN@latest/cover/default_bg.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">修改MySQL数据库字符编码为utf8mb4解决中文乱码</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/posts/ed21.html" title="CentOS编译安装配置MariaDB数据库"><img class="cover" src="https://i.loli.net/2019/11/10/T7Mu8Aod3egmC4Q.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-04-29</div><div class="title">CentOS编译安装配置MariaDB数据库</div></div></a></div><div><a href="/posts/688b.html" title="修改MySQL数据库字符编码为utf8mb4解决中文乱码"><img class="cover" src="https://file.crazywong.com/gh/jerryc127/CDN@latest/cover/default_bg.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-21</div><div class="title">修改MySQL数据库字符编码为utf8mb4解决中文乱码</div></div></a></div><div><a href="/posts/2.html" title="CentOS上搭建GitLab的详细过程"><img class="cover" src="https://i.loli.net/2019/11/10/T7Mu8Aod3egmC4Q.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-04</div><div class="title">CentOS上搭建GitLab的详细过程</div></div></a></div><div><a href="/posts/1c3a.html" title="Redis6.0.10编译安装配置"><img class="cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2021-02-10</div><div class="title">Redis6.0.10编译安装配置</div></div></a></div><div><a href="/posts/e3a7.html" title="Centos7双网卡绑定配置 bonding"><img class="cover" src="https://i.loli.net/2019/11/10/T7Mu8Aod3egmC4Q.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-09-29</div><div class="title">Centos7双网卡绑定配置 bonding</div></div></a></div><div><a href="/posts/9014.html" title="Linux系统单用户模式"><img class="cover" src="https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-05-02</div><div class="title">Linux系统单用户模式</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content is-expand"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E7%8E%AF%E5%A2%83"><span class="toc-number">1.</span> <span class="toc-text">安装环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="toc-number">2.</span> <span class="toc-text">环境配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1%E3%80%81%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85"><span class="toc-number">2.1.</span> <span class="toc-text">1、系统安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%98%B2%E7%81%AB%E5%A2%99%E9%85%8D%E7%BD%AE"><span class="toc-number">2.2.</span> <span class="toc-text">防火墙配置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E3%80%81%E5%85%B3%E9%97%ADfirewall"><span class="toc-number">2.2.1.</span> <span class="toc-text">1、关闭firewall</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%E3%80%81%E5%AE%89%E8%A3%85iptables%E9%98%B2%E7%81%AB%E5%A2%99"><span class="toc-number">2.2.2.</span> <span class="toc-text">2、安装iptables防火墙</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E9%97%ADSELINUX"><span class="toc-number">2.3.</span> <span class="toc-text">关闭SELINUX</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85"><span class="toc-number">3.</span> <span class="toc-text">编译安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%84%E5%88%92%E7%9B%AE%E5%BD%95"><span class="toc-number">3.1.</span> <span class="toc-text">规划目录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E8%BD%AF%E4%BB%B6%E5%8C%85"><span class="toc-number">3.2.</span> <span class="toc-text">下载软件包</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1%E3%80%81mysql"><span class="toc-number">3.2.1.</span> <span class="toc-text">1、mysql</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2%E3%80%81rpcsvc-proto-CentOS-8%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85MySQL8%E9%9C%80%E8%A6%81"><span class="toc-number">3.2.2.</span> <span class="toc-text">2、rpcsvc-proto #CentOS 8编译安装MySQL8需要</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3%E3%80%81boost-1-70-0-CentOS-8%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85MySQL8%E9%9C%80%E8%A6%81"><span class="toc-number">3.2.3.</span> <span class="toc-text">3、boost_1_70_0 #CentOS 8编译安装MySQL8需要</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4%E3%80%81cmake-%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85MySQL%E9%9C%80%E8%A6%81"><span class="toc-number">3.2.4.</span> <span class="toc-text">4、cmake #编译安装MySQL需要</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E5%AE%89%E8%A3%85%E7%BC%96%E8%AF%91%E5%B7%A5%E5%85%B7%E5%8F%8A%E5%BA%93%E6%96%87%E4%BB%B6%EF%BC%88%E4%BD%BF%E7%94%A8yum%E5%91%BD%E4%BB%A4%E5%AE%89%E8%A3%85%EF%BC%89"><span class="toc-number">3.2.5.</span> <span class="toc-text">五、安装编译工具及库文件（使用yum命令安装）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E7%AF%87"><span class="toc-number">3.3.</span> <span class="toc-text">安装篇</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%AE%89%E8%A3%85MySQL"><span class="toc-number">3.3.1.</span> <span class="toc-text">一、安装MySQL</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1%E3%80%81%E5%AE%89%E8%A3%85rpcsvc-proto"><span class="toc-number">3.3.1.1.</span> <span class="toc-text">1、安装rpcsvc-proto</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2%E3%80%81%E5%AE%89%E8%A3%85cmake"><span class="toc-number">3.3.1.2.</span> <span class="toc-text">2、安装cmake</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3%E3%80%81%E5%AE%89%E8%A3%85MySQL"><span class="toc-number">3.3.1.3.</span> <span class="toc-text">3、安装MySQL</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E5%88%9B%E5%BB%BAMySQL%E6%95%B0%E6%8D%AE%E5%BA%93%E3%80%81%E6%B7%BB%E5%8A%A0%E7%94%A8%E6%88%B7%E5%B9%B6%E6%8E%88%E6%9D%83"><span class="toc-number">3.4.</span> <span class="toc-text">二、创建MySQL数据库、添加用户并授权</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By Jeremy Peng</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">我的其它站点：<a href="https://aisk.cc/" target="_blank" rel="noopener">aisk.cc</a>、<a href="https://baize.cc/" target="_blank" rel="noopener">baize.cc</a><br>留下运维点滴记忆，悠悠岁月慢慢回味。</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
