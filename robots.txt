@@ -1,7 +1,6 @@
 # global
 User-agent: *
 Allow: /
-Allow: /posts/
 Disallow: /about/
 Disallow: /archives/
 Disallow: /js/
