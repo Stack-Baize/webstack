@@ -1,15 +1,4 @@
 # global
 User-agent: *
+Disallow: /assets/
 Allow: /
-Disallow: /about/
-Disallow: /archives/
-Disallow: /js/
-Disallow: /css/
-Disallow: /contact/
-Disallow: /fonts/
-Disallow: /friends/
-Disallow: /libs/
-Disallow: /video/
-Disallow: /page/
-Disallow: /tags/
-Disallow: /categories/
